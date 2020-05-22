@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ganjine/constants/strings.dart';
+import 'package:ganjine/constants/const_strings.dart';
 import 'package:ganjine/helpers/helper_assets.dart';
 import 'package:ganjine/helpers/helper_http.dart';
 import 'package:ganjine/screens/screen_home.dart';

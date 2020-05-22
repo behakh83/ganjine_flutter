@@ -30,6 +30,7 @@ flutter:
 
   assets:
     - assets/images/backgrounds/
+    - assets/images/
     - assets/lottie/
 
 

@@ -4,3 +4,8 @@ const kStringRequiredInternet =
 const kStringRetry = 'تلاش مجدد';
 
 const kStringNoInternet = 'عدم دسترسی به اینترنت';
+
+const kStringSeventhQuestions = 'سوالات پایه هفتم';
+const kStringEighthQuestions = 'سوالات پایه هشتم';
+const kStringNinthQuestions = 'سوالات پایه نهم';
+const kStringQuestionCollection = 'مجموعه سوال';
