@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ganjine/constants/const_theme.dart';
-import 'package:ganjine/screens/screen_asplsh.dart';
+import 'package:ganjine/screens/screen_splash.dart';
+import 'package:ganjine/screens/screen_home.dart';
 
 main() => runApp(GanjineApp());
 
@@ -21,7 +22,11 @@ class GanjineApp extends StatelessWidget {
 
       theme: kThemeApp,
 
-      home: SplashScreen(),
+      initialRoute: '/',
+      routes: {
+        SplashScreen.PATH: (context) => SplashScreen(),
+        HomeScreen.PATH: (context) => HomeScreen(),
+      },
     );
   }
 }
