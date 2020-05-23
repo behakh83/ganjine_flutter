@@ -32,4 +32,13 @@ class HttpHelper {
       throw ('');
     }
   }
+
+  static Future<dynamic> collection(int id) async {
+    try {
+      var response = await _client.get(_BASE_API + 'collections/$id/');
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      throw ('');
+    }
+  }
 }

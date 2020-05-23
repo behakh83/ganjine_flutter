@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:ganjine/helpers/helper_assets.dart';
 import 'package:ganjine/helpers/helper_http.dart';
-import 'package:ganjine/helpers/helper_ui.dart';
+import 'package:ganjine/helpers/helper_sweet_sheet.dart';
 import 'package:ganjine/screens/screen_home.dart';
 import 'package:lottie/lottie.dart';
 
@@ -35,10 +35,10 @@ class _SplashScreenState extends State<SplashScreen> {
                   arguments: response);
             },
           ).catchError((error) {
-            showNoConnectionDialog(context, onBuild);
+            showNoConnectionDialog(context, onBuild, exitApp: true);
           });
         } else {
-          showNoConnectionDialog(context, onBuild);
+          showNoConnectionDialog(context, onBuild, exitApp: true);
         }
       },
     );

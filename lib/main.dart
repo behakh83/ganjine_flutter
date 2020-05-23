@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ganjine/constants/const_theme.dart';
-import 'package:ganjine/screens/scree_questions.dart';
+import 'package:ganjine/screens/screen_questions.dart';
 import 'package:ganjine/screens/screen_collections.dart';
 import 'package:ganjine/screens/screen_splash.dart';
 import 'package:ganjine/screens/screen_home.dart';
