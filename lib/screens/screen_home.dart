@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ganjine/constants/const_strings.dart';
 import 'package:ganjine/helpers/helper_assets.dart';
 import 'package:ganjine/screens/screen_collections.dart';
 import 'package:ganjine/widgets/widget_index_tile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sweetsheet/sweetsheet.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,6 +36,37 @@ class _HomeScreenState extends State<HomeScreen> {
       icon: Icons.exit_to_app,
     );
     return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => onBuild());
+  }
+
+  Future<void> onBuild() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool welcome = (prefs.getBool('welcome') ?? true);
+    if (welcome) {
+      showAboutUsDialog();
+      await prefs.setBool('welcome', false);
+    }
+  }
+
+  void showAboutUsDialog() {
+    SweetSheet().show(
+      context: context,
+      description: Text(kStringAboutUsDetail),
+      color: SweetSheetColor.NICE,
+      positive: SweetSheetAction(
+        title: kStringOk,
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      title: Text(kStringWelcome),
+      icon: FontAwesomeIcons.info,
+    );
   }
 
   @override
@@ -149,6 +182,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     height: 15.0,
                   ),
                 ],
+              ),
+            ),
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Align(
+                  alignment: Alignment.topRight,
+                  child: FlatButton(
+                    onPressed: () {
+                      showAboutUsDialog();
+                    },
+                    child: Text(
+                      kStringAboutUs,
+                      style: TextStyle(
+                          fontSize: 20.0,
+                          color: Colors.white,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 25.0,
+                              color: Colors.black,
+                              offset: Offset(5.0, 5.0),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
               ),
             )
           ],

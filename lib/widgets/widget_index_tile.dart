@@ -22,8 +22,11 @@ class IndexTile extends StatelessWidget {
         InkWell(
           onTap: this.onPressed,
           child: Container(
-            padding: EdgeInsets.only(right: 20.0),
-            height: 124.0,
+            padding: EdgeInsets.only(
+              right: 20.0,
+              left: 100.0,
+              bottom: 5.0,
+            ),
             margin: new EdgeInsets.only(left: 40.0),
             decoration: new BoxDecoration(
               color: new Color(0xFF333366),
@@ -41,12 +44,12 @@ class IndexTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Flexible(
+                FittedBox(
+                  fit: BoxFit.fitWidth,
                   child: Text(
                     this.title,
                     style: TextStyle(
                       color: kColorPrimaryLight,
-                      fontSize: 30.0,
                     ),
                   ),
                 ),
@@ -77,7 +80,7 @@ class IndexTile extends StatelessWidget {
               ),
             ),
           ),
-        )
+        ),
       ],
     );
   }

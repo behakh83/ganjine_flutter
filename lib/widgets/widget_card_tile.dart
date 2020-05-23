@@ -1,4 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:random_color/random_color.dart';
 
@@ -31,6 +30,9 @@ class CardTile extends StatelessWidget {
         ),
         elevation: 2,
         child: Container(
+          padding: const EdgeInsets.only(
+            left: 5.0,
+          ),
           height: 70,
           decoration: BoxDecoration(
             color: this.fillColor ?? this.borderColor != null
@@ -50,7 +52,10 @@ class CardTile extends StatelessWidget {
           child: Row(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3.0),
+                padding: const EdgeInsets.only(
+                  top: 3.0,
+                  bottom: 3.0,
+                ),
                 child: CircleAvatar(
                   radius: 30.0,
                   backgroundColor: avatarColor != null
@@ -71,9 +76,14 @@ class CardTile extends StatelessWidget {
               SizedBox(
                 width: 5.0,
               ),
-              AutoSizeText(
-                this.title ?? '',
-                style: TextStyle(color: Colors.white, fontSize: 20.0),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    this.title ?? '',
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
+                ),
               )
             ],
           ),

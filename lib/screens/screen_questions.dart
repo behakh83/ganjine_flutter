@@ -109,8 +109,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               controller: _questionPageController,
               itemCount: questionData['questions_count'],
               itemBuilder: (context, index) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                child: ListView(
+                  shrinkWrap: true,
                   children: [
                     Flexible(
                       child: Text(
@@ -217,96 +217,99 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               ),
             ),
           ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Wrap(
-                direction: Axis.horizontal,
-                spacing: 3.0,
-                runSpacing: 3.0,
-                alignment: WrapAlignment.center,
-                children: [
-                  for (var i in answersStatus)
-                    FaIcon(
-                      i == QuestionState.NOT_SEEN
-                          ? FontAwesomeIcons.solidCircle
-                          : i == QuestionState.NO_ANSWER
-                              ? FontAwesomeIcons.solidCircle
-                              : i == QuestionState.RIGHT
-                                  ? FontAwesomeIcons.checkCircle
-                                  : i == QuestionState.WRONG
-                                      ? FontAwesomeIcons.timesCircle
-                                      : FontAwesomeIcons.circleNotch,
-                      size: 20.0,
-                      color: i == QuestionState.NOT_SEEN
-                          ? Colors.grey.withOpacity(0.5)
-                          : i == QuestionState.NO_ANSWER
-                              ? Colors.blue
-                              : i == QuestionState.RIGHT
-                                  ? Colors.green
-                                  : i == QuestionState.WRONG
-                                      ? Colors.red
-                                      : Colors.black,
-                    )
-                ],
-              ),
-              SizedBox(
-                height: 10.0,
-              ),
-              Container(
-                height: 50.0,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 3.0,
+                  runSpacing: 3.0,
+                  alignment: WrapAlignment.center,
                   children: [
-                    if (currentQuestion > 0)
-                      Expanded(
-                        child: FlatButton(
-                          color: Colors.red,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50.0)),
-                          child: Text(
-                            kStringPrevious,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                            ),
-                          ),
-                          onPressed: () {
-                            _questionPageController.previousPage(
-                                duration: Duration(seconds: 1),
-                                curve: Curves.ease);
-                          },
-                        ),
-                      ),
-                    if (currentQuestion > 0 &&
-                        currentQuestion < questionData['questions_count'] - 1)
-                      SizedBox(
-                        width: 10.0,
-                      ),
-                    if (currentQuestion < questionData['questions_count'] - 1)
-                      Expanded(
-                        child: FlatButton(
-                          color: Colors.green,
-                          textColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(50.0)),
-                          child: Text(
-                            kStringNext,
-                            style: TextStyle(
-                              fontSize: 20.0,
-                            ),
-                          ),
-                          onPressed: () {
-                            _questionPageController.nextPage(
-                                duration: Duration(seconds: 1),
-                                curve: Curves.ease);
-                          },
-                        ),
-                      ),
+                    for (var i in answersStatus)
+                      FaIcon(
+                        i == QuestionState.NOT_SEEN
+                            ? FontAwesomeIcons.solidCircle
+                            : i == QuestionState.NO_ANSWER
+                                ? FontAwesomeIcons.solidCircle
+                                : i == QuestionState.RIGHT
+                                    ? FontAwesomeIcons.checkCircle
+                                    : i == QuestionState.WRONG
+                                        ? FontAwesomeIcons.timesCircle
+                                        : FontAwesomeIcons.circleNotch,
+                        size: 20.0,
+                        color: i == QuestionState.NOT_SEEN
+                            ? Colors.grey.withOpacity(0.5)
+                            : i == QuestionState.NO_ANSWER
+                                ? Colors.blue
+                                : i == QuestionState.RIGHT
+                                    ? Colors.green
+                                    : i == QuestionState.WRONG
+                                        ? Colors.red
+                                        : Colors.black,
+                      )
                   ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 10.0,
+                ),
+                Container(
+                  height: 50.0,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (currentQuestion > 0)
+                        Expanded(
+                          child: FlatButton(
+                            color: Colors.red,
+                            textColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50.0)),
+                            child: Text(
+                              kStringPrevious,
+                              style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                            ),
+                            onPressed: () {
+                              _questionPageController.previousPage(
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
+                          ),
+                        ),
+                      if (currentQuestion > 0 &&
+                          currentQuestion < questionData['questions_count'] - 1)
+                        SizedBox(
+                          width: 10.0,
+                        ),
+                      if (currentQuestion < questionData['questions_count'] - 1)
+                        Expanded(
+                          child: FlatButton(
+                            color: Colors.green,
+                            textColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50.0)),
+                            child: Text(
+                              kStringNext,
+                              style: TextStyle(
+                                fontSize: 20.0,
+                              ),
+                            ),
+                            onPressed: () {
+                              _questionPageController.nextPage(
+                                  duration: Duration(milliseconds: 500),
+                                  curve: Curves.ease);
+                            },
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           )
         ],
       );

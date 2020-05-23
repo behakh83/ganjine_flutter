@@ -19,3 +19,8 @@ const kStringOption4 = 'د';
 const kStringExit = 'آیا می خواهید خارج شوید؟';
 const kStringYes = 'بله';
 const kStringNo = 'خیر';
+const kStringAboutUs = 'درباره ما';
+const kStringWelcome = 'خوش آمدید';
+const kStringAboutUsDetail =
+    'گنجینه مجموعه ای بی نظیر از بهترین سوالات مطالعات اجتماعی پایه های هفتم، هشتم و نهم است که می تواند شما را برای امتحانات آماده کند.';
+const kStringOk = 'باشه';

@@ -25,9 +25,9 @@ class _SplashScreenState extends State<SplashScreen> {
       (status) async {
         if (status) {
           if (DateTime.now()
-              .subtract(Duration(seconds: 5))
+              .subtract(Duration(seconds: 3))
               .isBefore(timeStart)) {
-            await Future.delayed(Duration(seconds: 3));
+            await Future.delayed(Duration(seconds: 1));
           }
           HttpHelper.collectionsCount().then(
             (response) async {

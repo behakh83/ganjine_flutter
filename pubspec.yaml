@@ -20,8 +20,9 @@ dependencies:
   lottie: ^0.3.6
   sweetsheet: ^0.2.0
   random_color: ^1.0.5
-  auto_size_text: ^2.1.0
   font_awesome_flutter: ^8.8.1
+  shared_preferences: ^0.5.7+3
+
 
 
 
