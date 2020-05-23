@@ -33,7 +33,9 @@ class CardTile extends StatelessWidget {
         child: Container(
           height: 70,
           decoration: BoxDecoration(
-            color: this.fillColor ?? Colors.grey.withOpacity(0.5),
+            color: this.fillColor ?? this.borderColor != null
+                ? this.borderColor.withOpacity(0.5)
+                : Colors.grey.withOpacity(0.5),
             border: Border(
               right:
                   BorderSide(color: this.borderColor ?? Colors.grey, width: 5),
