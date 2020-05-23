@@ -9,3 +9,4 @@ const kStringSeventhQuestions = 'سوالات پایه هفتم';
 const kStringEighthQuestions = 'سوالات پایه هشتم';
 const kStringNinthQuestions = 'سوالات پایه نهم';
 const kStringQuestionCollection = 'مجموعه سوال';
+const kStringNoCollections = 'به زودی ...';

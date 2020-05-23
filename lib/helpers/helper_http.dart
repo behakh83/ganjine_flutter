@@ -14,4 +14,22 @@ class HttpHelper {
       return false;
     }
   }
+
+  static Future<dynamic> collectionsCount() async {
+    try {
+      var response = await _client.get(_BASE_API + 'collections-count/');
+      return jsonDecode(response.body);
+    } catch (e) {
+      throw ('');
+    }
+  }
+
+  static Future<dynamic> collectionList(int grade) async {
+    try {
+      var response = await _client.get(_BASE_API + 'collections/?grade=$grade');
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } catch (e) {
+      throw ('');
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ganjine/constants/const_strings.dart';
 import 'package:ganjine/helpers/helper_assets.dart';
+import 'package:ganjine/screens/screen_collections.dart';
 import 'package:ganjine/widgets/widget_index_tile.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,6 +13,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    var collectionsCount =
+        ModalRoute.of(context).settings.arguments as Map<String, dynamic>;
     return Scaffold(
       body: Stack(
         children: [
@@ -49,7 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       avatarText: '7',
                       avatarColor: Colors.amber,
                       title: kStringSeventhQuestions,
-                      subTitle: '' + kStringQuestionCollection,
+                      subTitle: collectionsCount['seventh'] == 0
+                          ? kStringNoCollections
+                          : collectionsCount['seventh'].toString() +
+                              ' ' +
+                              kStringQuestionCollection,
+                      onPressed: collectionsCount['seventh'] == 0
+                          ? null
+                          : () {
+                              Navigator.pushNamed(
+                                  context, CollectionsScreen.PATH,
+                                  arguments: 7);
+                            },
                     ),
                   ),
                 ),
@@ -63,7 +77,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       avatarText: '8',
                       avatarColor: Colors.teal,
                       title: kStringEighthQuestions,
-                      subTitle: '' + kStringQuestionCollection,
+                      subTitle: collectionsCount['eighth'] == 0
+                          ? kStringNoCollections
+                          : collectionsCount['eighth'].toString() +
+                              ' ' +
+                              kStringQuestionCollection,
+                      onPressed: collectionsCount['eighth'] == 0
+                          ? null
+                          : () {
+                              Navigator.pushNamed(
+                                  context, CollectionsScreen.PATH,
+                                  arguments: 8);
+                            },
                     ),
                   ),
                 ),
@@ -77,7 +102,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       avatarText: '9',
                       avatarColor: Colors.pinkAccent,
                       title: kStringNinthQuestions,
-                      subTitle: '' + kStringQuestionCollection,
+                      subTitle: collectionsCount['ninth'] == 0
+                          ? kStringNoCollections
+                          : collectionsCount['ninth'].toString() +
+                              ' ' +
+                              kStringQuestionCollection,
+                      onPressed: collectionsCount['ninth'] == 0
+                          ? null
+                          : () {
+                              Navigator.pushNamed(
+                                  context, CollectionsScreen.PATH,
+                                  arguments: 9);
+                            },
                     ),
                   ),
                 ),

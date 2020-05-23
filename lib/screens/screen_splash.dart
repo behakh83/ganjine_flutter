@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ganjine/constants/const_strings.dart';
 import 'package:ganjine/helpers/helper_assets.dart';
 import 'package:ganjine/helpers/helper_http.dart';
+import 'package:ganjine/helpers/helper_ui.dart';
 import 'package:ganjine/screens/screen_home.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sweetsheet/sweetsheet.dart';
 
 class SplashScreen extends StatefulWidget {
   static const PATH = '/';
@@ -30,22 +29,16 @@ class _SplashScreenState extends State<SplashScreen> {
               .isBefore(timeStart)) {
             await Future.delayed(Duration(seconds: 3));
           }
-          Navigator.popAndPushNamed(context, HomeScreen.PATH);
+          HttpHelper.collectionsCount().then(
+            (response) async {
+              Navigator.popAndPushNamed(context, HomeScreen.PATH,
+                  arguments: response);
+            },
+          ).catchError((error) {
+            showNoConnectionDialog(context, onBuild);
+          });
         } else {
-          SweetSheet().show(
-            context: context,
-            description: Text(kStringRequiredInternet),
-            color: SweetSheetColor.DANGER,
-            positive: SweetSheetAction(
-              title: kStringRetry,
-              onPressed: () {
-                Navigator.pop(context);
-                onBuild();
-              },
-            ),
-            title: Text(kStringNoInternet),
-            icon: Icons.signal_wifi_off,
-          );
+          showNoConnectionDialog(context, onBuild);
         }
       },
     );
