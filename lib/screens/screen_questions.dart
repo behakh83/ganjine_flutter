@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -112,33 +113,37 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(top: 10.0),
-                        child: Text(
-                          response['name'],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 50.0,
-                            fontFamily: 'DimaKhabar2',
-                            foreground: Paint()
-                              ..shader = LinearGradient(
-                                colors: <Color>[
-                                  kColorPrimaryDark,
-                                  kColorPrimaryLight,
-                                ],
-                              ).createShader(
-                                Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
-                              ),
-                            shadows: [
-                              Shadow(
-                                blurRadius: 25.0,
-                                color: Colors.black,
-                                offset: Offset(5.0, 5.0),
-                              ),
-                            ],
+                        padding: const EdgeInsets.only(
+                            top: 10.0, left: 20.0, right: 20.0),
+                        child: FittedBox(
+                          fit: BoxFit.fitWidth,
+                          child: Text(
+                            response['name'],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 50.0,
+                              fontFamily: 'DimaKhabar2',
+                              foreground: Paint()
+                                ..shader = LinearGradient(
+                                  colors: <Color>[
+                                    kColorPrimaryDark,
+                                    kColorPrimaryLight,
+                                  ],
+                                ).createShader(
+                                  Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                                ),
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 25.0,
+                                  color: Colors.black,
+                                  offset: Offset(5.0, 5.0),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      Expanded(
+                      Flexible(
                         child: PageView.builder(
                           controller: _pageController,
                           itemCount: response['questions_count'],
@@ -148,28 +153,26 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                               child: ListView(
                                 shrinkWrap: true,
                                 children: [
-                                  Flexible(
-                                    child: Text(
-                                      response['question_set'][index]
-                                          ['question_text'],
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 25.0,
-                                        shadows: [
-                                          Shadow(
-                                            blurRadius: 25.0,
-                                            color: Colors.black,
-                                            offset: Offset(5.0, 5.0),
-                                          ),
-                                        ],
-                                      ),
+                                  AutoSizeText(
+                                    response['question_set'][index]
+                                        ['question_text'],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 25.0,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 25.0,
+                                          color: Colors.black,
+                                          offset: Offset(5.0, 5.0),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   RoundedTile(
                                     feedback: false,
                                     title: response['question_set'][index]
-                                        ['question_text'],
+                                        ['option1'],
                                     avatarText: 1.toString(),
                                     avatarColor: Colors.teal,
                                     onPressed: () {
@@ -182,7 +185,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   RoundedTile(
                                     feedback: false,
                                     title: response['question_set'][index]
-                                        ['question_text'],
+                                        ['option2'],
                                     avatarText: 2.toString(),
                                     avatarColor: Colors.orange,
                                     onPressed: () {
@@ -195,7 +198,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   RoundedTile(
                                     feedback: false,
                                     title: response['question_set'][index]
-                                        ['question_text'],
+                                        ['option3'],
                                     avatarText: 3.toString(),
                                     avatarColor: Colors.pink,
                                     onPressed: () {
@@ -208,7 +211,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   RoundedTile(
                                     feedback: false,
                                     title: response['question_set'][index]
-                                        ['question_text'],
+                                        ['option4'],
                                     avatarText: 4.toString(),
                                     avatarColor: Colors.blue,
                                     onPressed: () {
@@ -339,22 +342,32 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                 AnimatedContainer(
                                   duration: Duration(milliseconds: 300),
                                   curve: Curves.ease,
-                                  width: !_pageController.hasClients
-                                      ? MediaQuery.of(context).size.width - 30
-                                      : _pageController.page.roundToDouble() ==
-                                              0
+                                  width: !_pageController.hasClients &&
+                                          response['questions_count'] == 1
+                                      ? 0
+                                      : !_pageController.hasClients
                                           ? MediaQuery.of(context).size.width -
                                               30
-                                          : _pageController.page
-                                                      .roundToDouble() <
-                                                  response['questions_count'] -
-                                                      1
-                                              ? MediaQuery.of(context)
+                                          : response['questions_count'] == 1
+                                              ? 0
+                                              : _pageController.page
+                                                          .roundToDouble() ==
+                                                      0
+                                                  ? MediaQuery.of(context)
                                                           .size
-                                                          .width *
-                                                      0.5 -
-                                                  30
-                                              : 0,
+                                                          .width -
+                                                      30
+                                                  : _pageController.page
+                                                              .roundToDouble() <
+                                                          response[
+                                                                  'questions_count'] -
+                                                              1
+                                                      ? MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.5 -
+                                                          30
+                                                      : 0,
                                   child: FlatButton(
                                     color: Colors.green,
                                     textColor: Colors.white,
