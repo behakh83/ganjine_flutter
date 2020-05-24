@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ganjine/constants/conts_colors.dart';
+import 'package:ganjine/constants/const_values.dart';
 
-class IndexTile extends StatelessWidget {
-  IndexTile(
+class IndexCard extends StatelessWidget {
+  IndexCard(
       {this.avatarText,
       this.avatarColor,
       this.title,
@@ -27,16 +27,16 @@ class IndexTile extends StatelessWidget {
               left: 100.0,
               bottom: 5.0,
             ),
-            margin: new EdgeInsets.only(left: 40.0),
-            decoration: new BoxDecoration(
-              color: new Color(0xFF333366),
+            margin: EdgeInsets.only(left: 40.0),
+            decoration: BoxDecoration(
+              color: Color(0xFF333366),
               shape: BoxShape.rectangle,
               borderRadius: new BorderRadius.circular(8.0),
               boxShadow: <BoxShadow>[
-                new BoxShadow(
+                BoxShadow(
                   color: Colors.black12,
                   blurRadius: 10.0,
-                  offset: new Offset(0.0, 10.0),
+                  offset: Offset(0.0, 10.0),
                 ),
               ],
             ),

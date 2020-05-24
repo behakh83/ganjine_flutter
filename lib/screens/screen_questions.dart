@@ -1,355 +1,390 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ganjine/constants/const_strings.dart';
-import 'package:ganjine/constants/conts_colors.dart';
-import 'package:ganjine/helpers/helper_assets.dart';
-import 'package:ganjine/helpers/helper_http.dart';
-import 'package:ganjine/helpers/helper_sweet_sheet.dart';
-import 'package:ganjine/widgets/widget_card_tile.dart';
+import 'package:ganjine/constants/const_values.dart';
+import 'package:ganjine/utilities/utility_ganjine_api.dart';
+import 'package:ganjine/widgets/widget_rounded_tile.dart';
+import 'package:ganjine/widgets/widget_sweet_sheet.dart';
 import 'package:lottie/lottie.dart';
-
-enum QuestionState {
-  PENDING,
-  NOT_SEEN,
-  NO_ANSWER,
-  RIGHT,
-  WRONG,
-}
+import 'package:soundpool/soundpool.dart';
 
 class QuestionsScreen extends StatefulWidget {
   static const PATH = '/questions';
+  static const ARGS_COLLECTION_ID = 'ARGS_COLLECTION_ID';
 
   @override
   _QuestionsScreenState createState() => _QuestionsScreenState();
 }
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
-  int questionID;
-  Map<String, dynamic> questionData;
-  int currentQuestion = 0;
-  List<QuestionState> answersStatus;
+  bool loading = true;
+  Map<String, dynamic> response;
+  PageController _pageController;
   List<int> answers;
-  Widget mainLayout = Center(
-    child: Lottie.asset(
-      lottieAssetJSON('lt_loading'),
-    ),
-  );
-  PageController _questionPageController;
+  Map<String, dynamic> arguments;
+  Soundpool pool = Soundpool(streamType: StreamType.notification);
+  var correctSoundId;
+  var wrongSoundId;
 
   @override
   void initState() {
     super.initState();
-    _questionPageController = PageController();
+    _pageController = PageController(initialPage: 0);
+    _pageController.addListener(() {
+      setState(() {});
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) => onBuild());
   }
 
   @override
   void dispose() {
+    _pageController.dispose();
     super.dispose();
-    _questionPageController.dispose();
-  }
-
-  void onOptionSelected(int option) {
-    answers[currentQuestion] = option;
-    answersStatus[currentQuestion] = questionData['question_set']
-                [currentQuestion]['correct_option'] ==
-            option
-        ? QuestionState.RIGHT
-        : QuestionState.WRONG;
-    rebuildMainLayout();
-  }
-
-  void rebuildMainLayout() {
-    setState(() {
-      mainLayout = Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            questionData['name'],
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 50.0,
-              fontFamily: 'DimaKhabar2',
-              foreground: Paint()
-                ..shader = LinearGradient(
-                  colors: <Color>[
-                    kColorPrimaryDark,
-                    kColorPrimaryLight,
-                  ],
-                ).createShader(
-                  Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
-                ),
-              shadows: [
-                Shadow(
-                  blurRadius: 25.0,
-                  color: Colors.black,
-                  offset: Offset(5.0, 5.0),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: PageView.builder(
-              onPageChanged: (index) {
-                setState(() {
-                  if (answersStatus[currentQuestion] != QuestionState.RIGHT &&
-                      answersStatus[currentQuestion] != QuestionState.WRONG) {
-                    answersStatus[currentQuestion] = QuestionState.NO_ANSWER;
-                  }
-                  if (answersStatus[index] != QuestionState.RIGHT &&
-                      answersStatus[index] != QuestionState.WRONG) {
-                    answersStatus[index] = QuestionState.PENDING;
-                  }
-                  currentQuestion = index;
-                  rebuildMainLayout();
-                });
-              },
-              controller: _questionPageController,
-              itemCount: questionData['questions_count'],
-              itemBuilder: (context, index) => Center(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        questionData['question_set'][index]['question_text'],
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 25.0,
-                          shadows: [
-                            Shadow(
-                              blurRadius: 25.0,
-                              color: Colors.black,
-                              offset: Offset(5.0, 5.0),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 30.0,
-                    ),
-                    CardTile(
-                      avatarText: kStringOption1,
-                      avatarColor: Colors.teal,
-                      borderColor: answers[index] == 0
-                          ? Colors.grey
-                          : questionData['question_set'][index]
-                                      ['correct_option'] ==
-                                  1
-                              ? Colors.green
-                              : answers[index] == 1 &&
-                                      answers[index] !=
-                                          questionData['question_set'][index]
-                                              ['correct_option']
-                                  ? Colors.red
-                                  : Colors.grey,
-                      title: questionData['question_set'][index]['option1'],
-                      onPressed: () {
-                        onOptionSelected(1);
-                      },
-                    ),
-                    CardTile(
-                      avatarText: kStringOption2,
-                      avatarColor: Colors.pink,
-                      borderColor: answers[index] == 0
-                          ? Colors.grey
-                          : questionData['question_set'][index]
-                                      ['correct_option'] ==
-                                  2
-                              ? Colors.green
-                              : answers[index] == 2 &&
-                                      answers[index] !=
-                                          questionData['question_set'][index]
-                                              ['correct_option']
-                                  ? Colors.red
-                                  : Colors.grey,
-                      title: questionData['question_set'][index]['option2'],
-                      onPressed: () {
-                        onOptionSelected(2);
-                      },
-                    ),
-                    CardTile(
-                      avatarText: kStringOption3,
-                      borderColor: answers[index] == 0
-                          ? Colors.grey
-                          : questionData['question_set'][index]
-                                      ['correct_option'] ==
-                                  3
-                              ? Colors.green
-                              : answers[index] == 3 &&
-                                      answers[index] !=
-                                          questionData['question_set'][index]
-                                              ['correct_option']
-                                  ? Colors.red
-                                  : Colors.grey,
-                      avatarColor: Colors.amber,
-                      title: questionData['question_set'][index]['option3'],
-                      onPressed: () {
-                        onOptionSelected(3);
-                      },
-                    ),
-                    CardTile(
-                      avatarText: kStringOption4,
-                      borderColor: answers[index] == 0
-                          ? Colors.grey
-                          : questionData['question_set'][index]
-                                      ['correct_option'] ==
-                                  4
-                              ? Colors.green
-                              : answers[index] == 4 &&
-                                      answers[index] !=
-                                          questionData['question_set'][index]
-                                              ['correct_option']
-                                  ? Colors.red
-                                  : Colors.grey,
-                      avatarColor: Colors.deepOrange,
-                      title: questionData['question_set'][index]['option4'],
-                      onPressed: () {
-                        onOptionSelected(4);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Wrap(
-                  direction: Axis.horizontal,
-                  spacing: 3.0,
-                  runSpacing: 3.0,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    for (var i in answersStatus)
-                      FaIcon(
-                        i == QuestionState.NOT_SEEN
-                            ? FontAwesomeIcons.solidCircle
-                            : i == QuestionState.NO_ANSWER
-                                ? FontAwesomeIcons.solidCircle
-                                : i == QuestionState.RIGHT
-                                    ? FontAwesomeIcons.checkCircle
-                                    : i == QuestionState.WRONG
-                                        ? FontAwesomeIcons.timesCircle
-                                        : FontAwesomeIcons.circleNotch,
-                        size: 20.0,
-                        color: i == QuestionState.NOT_SEEN
-                            ? Colors.grey.withOpacity(0.5)
-                            : i == QuestionState.NO_ANSWER
-                                ? Colors.blue
-                                : i == QuestionState.RIGHT
-                                    ? Colors.green
-                                    : i == QuestionState.WRONG
-                                        ? Colors.red
-                                        : Colors.black,
-                      )
-                  ],
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                Container(
-                  height: 50.0,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      if (currentQuestion > 0)
-                        Expanded(
-                          child: FlatButton(
-                            color: Colors.red,
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50.0)),
-                            child: Text(
-                              kStringPrevious,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                              ),
-                            ),
-                            onPressed: () {
-                              _questionPageController.previousPage(
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.ease);
-                            },
-                          ),
-                        ),
-                      if (currentQuestion > 0 &&
-                          currentQuestion < questionData['questions_count'] - 1)
-                        SizedBox(
-                          width: 10.0,
-                        ),
-                      if (currentQuestion < questionData['questions_count'] - 1)
-                        Expanded(
-                          child: FlatButton(
-                            color: Colors.green,
-                            textColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(50.0)),
-                            child: Text(
-                              kStringNext,
-                              style: TextStyle(
-                                fontSize: 20.0,
-                              ),
-                            ),
-                            onPressed: () {
-                              _questionPageController.nextPage(
-                                  duration: Duration(milliseconds: 500),
-                                  curve: Curves.ease);
-                            },
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      );
-    });
   }
 
   void onBuild() {
-    HttpHelper.collection(questionID).then((response) {
+    GanjineAPI.collection(arguments[QuestionsScreen.ARGS_COLLECTION_ID])
+        .then((response) async {
+      correctSoundId = await rootBundle
+          .load("assets/sounds/correct.wav")
+          .then((ByteData soundData) {
+        return pool.load(soundData);
+      });
+      wrongSoundId = await rootBundle
+          .load("assets/sounds/wrong.wav")
+          .then((ByteData soundData) {
+        return pool.load(soundData);
+      });
       setState(() {
-        questionData = response;
-        answersStatus =
-            List.filled(response['questions_count'], QuestionState.NOT_SEEN);
+        loading = false;
+        this.response = response;
         answers = List.filled(response['questions_count'], 0);
-        answersStatus[0] = QuestionState.PENDING;
-        rebuildMainLayout();
       });
     }).catchError((error) {
-      showNoConnectionDialog(context, onBuild);
+      showNoConnectionBottomSheet(context, onBuild);
     });
+  }
+
+  Color getOptionBorderColor(int option, int index) {
+    return answers[index] == option &&
+            response['question_set'][index]['correct_option'] != option
+        ? Colors.red
+        : answers[index] == option &&
+                response['question_set'][index]['correct_option'] == option
+            ? Colors.green
+            : answers[index] != 0 &&
+                    answers[index] != option &&
+                    response['question_set'][index]['correct_option'] == option
+                ? Colors.green
+                : Colors.grey;
+  }
+
+  void onOptionSelected(int option, int index) {
+    answers[index] = option;
+    if (response['question_set'][index]['correct_option'] == option)
+      pool.play(correctSoundId);
+    else
+      pool.play(wrongSoundId);
   }
 
   @override
   Widget build(BuildContext context) {
-    questionID = ModalRoute.of(context).settings.arguments;
+    arguments = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       body: Stack(
         children: [
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage(
-                    imageAssetPNG('backgrounds/bg_screen_questions')),
+                image: AssetImage('assets/images/bg_screen_questions.png'),
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
             ),
           ),
           SafeArea(
-            child:
-                Padding(padding: const EdgeInsets.all(8.0), child: mainLayout),
+            child: loading
+                ? Center(
+                    child: Lottie.asset('assets/lottie/lt_loading.json'),
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          response['name'],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 50.0,
+                            fontFamily: 'DimaKhabar2',
+                            foreground: Paint()
+                              ..shader = LinearGradient(
+                                colors: <Color>[
+                                  kColorPrimaryDark,
+                                  kColorPrimaryLight,
+                                ],
+                              ).createShader(
+                                Rect.fromLTWH(0.0, 0.0, 200.0, 70.0),
+                              ),
+                            shadows: [
+                              Shadow(
+                                blurRadius: 25.0,
+                                color: Colors.black,
+                                offset: Offset(5.0, 5.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: PageView.builder(
+                          controller: _pageController,
+                          itemCount: response['questions_count'],
+                          itemBuilder: (context, index) => Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: ListView(
+                              shrinkWrap: true,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    response['question_set'][index]
+                                        ['question_text'],
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 25.0,
+                                      shadows: [
+                                        Shadow(
+                                          blurRadius: 25.0,
+                                          color: Colors.black,
+                                          offset: Offset(5.0, 5.0),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                RoundedTile(
+                                  feedback: false,
+                                  title: response['question_set'][index]
+                                      ['question_text'],
+                                  avatarText: 1.toString(),
+                                  avatarColor: Colors.teal,
+                                  onPressed: () {
+                                    setState(() {
+                                      onOptionSelected(1, index);
+                                    });
+                                  },
+                                  borderColor: getOptionBorderColor(1, index),
+                                ),
+                                RoundedTile(
+                                  feedback: false,
+                                  title: response['question_set'][index]
+                                      ['question_text'],
+                                  avatarText: 2.toString(),
+                                  avatarColor: Colors.orange,
+                                  onPressed: () {
+                                    setState(() {
+                                      onOptionSelected(2, index);
+                                    });
+                                  },
+                                  borderColor: getOptionBorderColor(2, index),
+                                ),
+                                RoundedTile(
+                                  feedback: false,
+                                  title: response['question_set'][index]
+                                      ['question_text'],
+                                  avatarText: 3.toString(),
+                                  avatarColor: Colors.pink,
+                                  onPressed: () {
+                                    setState(() {
+                                      onOptionSelected(3, index);
+                                    });
+                                  },
+                                  borderColor: getOptionBorderColor(3, index),
+                                ),
+                                RoundedTile(
+                                  feedback: false,
+                                  title: response['question_set'][index]
+                                      ['question_text'],
+                                  avatarText: 4.toString(),
+                                  avatarColor: Colors.blue,
+                                  onPressed: () {
+                                    setState(() {
+                                      onOptionSelected(4, index);
+                                    });
+                                  },
+                                  borderColor: getOptionBorderColor(4, index),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Wrap(
+                                direction: Axis.horizontal,
+                                spacing: 3.0,
+                                alignment: WrapAlignment.center,
+                                runAlignment: WrapAlignment.center,
+                                children: [
+                                  for (var i in answers)
+                                    FaIcon(
+                                      i == 0
+                                          ? FontAwesomeIcons.solidCircle
+                                          : i ==
+                                                  response['question_set']
+                                                          [answers.indexOf(i)]
+                                                      ['correct_option']
+                                              ? FontAwesomeIcons
+                                                  .solidCheckCircle
+                                              : i !=
+                                                      response['question_set'][
+                                                              answers
+                                                                  .indexOf(i)]
+                                                          ['correct_option']
+                                                  ? FontAwesomeIcons
+                                                      .solidTimesCircle
+                                                  : FontAwesomeIcons
+                                                      .solidCircle,
+                                      color: i == 0
+                                          ? Colors.blue
+                                          : i ==
+                                                  response['question_set']
+                                                          [answers.indexOf(i)]
+                                                      ['correct_option']
+                                              ? Colors.green.shade700
+                                              : i !=
+                                                      response['question_set'][
+                                                              answers
+                                                                  .indexOf(i)]
+                                                          ['correct_option']
+                                                  ? Colors.redAccent
+                                                  : Colors.blue,
+                                    )
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                AnimatedContainer(
+                                  duration: Duration(
+                                    milliseconds: 300,
+                                  ),
+                                  curve: Curves.ease,
+                                  width: !_pageController.hasClients
+                                      ? 0
+                                      : _pageController.hasClients &&
+                                              _pageController.page.round() == 0
+                                          ? 0
+                                          : _pageController
+                                                      .page
+                                                      .roundToDouble() ==
+                                                  response['questions_count'] -
+                                                      1
+                                              ? MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  30
+                                              : _pageController.page
+                                                          .roundToDouble() >
+                                                      0
+                                                  ? MediaQuery.of(context)
+                                                              .size
+                                                              .width *
+                                                          0.5 -
+                                                      30
+                                                  : 0,
+                                  child: FlatButton(
+                                    color: Colors.red,
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50.0)),
+                                    child: FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                          kStringPrevious,
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _pageController.previousPage(
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.ease);
+                                    },
+                                  ),
+                                ),
+                                if (_pageController.hasClients &&
+                                    _pageController.page.roundToDouble() > 0 &&
+                                    _pageController.page.roundToDouble() <
+                                        response['questions_count'] - 1)
+                                  SizedBox(
+                                    width: 10.0,
+                                  ),
+                                AnimatedContainer(
+                                  duration: Duration(milliseconds: 300),
+                                  curve: Curves.ease,
+                                  width: !_pageController.hasClients
+                                      ? MediaQuery.of(context).size.width - 30
+                                      : _pageController.page.roundToDouble() ==
+                                              0
+                                          ? MediaQuery.of(context).size.width -
+                                              30
+                                          : _pageController.page
+                                                      .roundToDouble() <
+                                                  response['questions_count'] -
+                                                      1
+                                              ? MediaQuery.of(context)
+                                                          .size
+                                                          .width *
+                                                      0.5 -
+                                                  30
+                                              : 0,
+                                  child: FlatButton(
+                                    color: Colors.green,
+                                    textColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(50.0)),
+                                    child: FittedBox(
+                                      fit: BoxFit.fitHeight,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: Text(
+                                          kStringNext,
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _pageController.nextPage(
+                                          duration: Duration(milliseconds: 500),
+                                          curve: Curves.ease);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
           ),
         ],
       ),

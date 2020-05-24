@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:ganjine/constants/const_theme.dart';
 import 'package:ganjine/screens/screen_questions.dart';
 import 'package:ganjine/screens/screen_collections.dart';
 import 'package:ganjine/screens/screen_splash.dart';
@@ -12,7 +11,6 @@ class GanjineApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // Init app locale
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -21,9 +19,9 @@ class GanjineApp extends StatelessWidget {
         Locale('fa', 'IR'),
       ],
       locale: Locale('fa', 'IR'),
-
-      theme: kThemeApp,
-
+      theme: ThemeData(
+        fontFamily: 'DimaFred',
+      ),
       initialRoute: '/',
       routes: {
         SplashScreen.PATH: (context) => SplashScreen(),

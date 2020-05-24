@@ -2,15 +2,15 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ganjine/constants/const_strings.dart';
+import 'package:ganjine/constants/const_values.dart';
 
-bool _exitApp = false;
-bool _doublePop = false;
+const Duration _bottomSheetEnterDuration = Duration(milliseconds: 250);
+const Duration _bottomSheetExitDuration = Duration(milliseconds: 200);
+const Curve decelerateEasing = Cubic(0.0, 0.0, 0.2, 1.0);
+const Curve _modalBottomSheetCurve = decelerateEasing;
 
-void showNoConnectionDialog(BuildContext context, VoidCallback callback,
-    {bool exitApp = false}) {
-  _doublePop = true;
-  _exitApp = exitApp;
+void showNoConnectionBottomSheet(BuildContext context, void Function() onRetry,
+    {bool onBackExit = false}) {
   SweetSheet().show(
     context: context,
     isDismissible: false,
@@ -20,11 +20,43 @@ void showNoConnectionDialog(BuildContext context, VoidCallback callback,
       title: kStringRetry,
       onPressed: () {
         Navigator.pop(context);
-        callback();
+        onRetry();
       },
     ),
     title: Text(kStringNoInternet),
     icon: Icons.signal_wifi_off,
+    onBackPressed: () async {
+      if (onBackExit) {
+        showExitBottomSheet(context);
+      } else {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+      return false;
+    },
+  );
+}
+
+void showExitBottomSheet(BuildContext context) {
+  SweetSheet().show(
+    context: context,
+    isDismissible: true,
+    description: Text(''),
+    color: SweetSheetColor.WARNING,
+    positive: SweetSheetAction(
+      title: kStringYes,
+      onPressed: () {
+        SystemNavigator.pop(animated: true);
+      },
+    ),
+    negative: SweetSheetAction(
+      title: kStringNo,
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    ),
+    title: Text(kStringExitMessage),
+    icon: Icons.exit_to_app,
   );
 }
 
@@ -102,17 +134,18 @@ class SweetSheetColor {
 }
 
 class SweetSheet {
-  show({
-    @required BuildContext context,
-    Text title,
-    @required Text description,
-    @required CustomSheetColor color,
-    @required SweetSheetAction positive,
-    SweetSheetAction negative,
-    IconData icon,
-    bool isDismissible,
-  }) {
+  show(
+      {@required BuildContext context,
+      Text title,
+      @required Text description,
+      @required CustomSheetColor color,
+      @required SweetSheetAction positive,
+      SweetSheetAction negative,
+      IconData icon,
+      bool isDismissible,
+      Future<bool> Function() onBackPressed}) {
     _showModalBottomSheet(
+      onBackPressed: onBackPressed,
       isDismissible: isDismissible,
       context: context,
       isScrollControlled: true,
@@ -197,8 +230,6 @@ class SweetSheet {
   _buildActions(SweetSheetAction positive, SweetSheetAction negative) {
     List<SweetSheetAction> actions = [];
 
-    // This order is important
-    // It helps to place the positive at the right and the negative before
     if (negative != null) {
       actions.add(negative);
     }
@@ -222,6 +253,7 @@ class SweetSheet {
     bool useRootNavigator = false,
     bool isDismissible = true,
     bool enableDrag = true,
+    Future<bool> Function() onBackPressed,
   }) {
     assert(context != null);
     assert(builder != null);
@@ -234,6 +266,7 @@ class SweetSheet {
 
     return Navigator.of(context, rootNavigator: useRootNavigator)
         .push(_ModalBottomSheetRoute<T>(
+      onBackPressed: onBackPressed,
       builder: builder,
       theme: Theme.of(context, shadowThemeOnly: true),
       isScrollControlled: isScrollControlled,
@@ -249,14 +282,10 @@ class SweetSheet {
   }
 }
 
-const Duration _bottomSheetEnterDuration = Duration(milliseconds: 250);
-const Duration _bottomSheetExitDuration = Duration(milliseconds: 200);
-const Curve decelerateEasing = Cubic(0.0, 0.0, 0.2, 1.0);
-const Curve _modalBottomSheetCurve = decelerateEasing;
-
 class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
   _ModalBottomSheetRoute({
     this.builder,
+    this.onBackPressed,
     this.theme,
     this.barrierLabel,
     this.backgroundColor,
@@ -283,6 +312,7 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
   final Color modalBarrierColor;
   final bool isDismissible;
   final bool enableDrag;
+  final Future<bool> Function() onBackPressed;
 
   @override
   Duration get transitionDuration => _bottomSheetEnterDuration;
@@ -321,6 +351,7 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
       removeTop: true,
       child: _ModalBottomSheet<T>(
         route: this,
+        onBackPressed: this.onBackPressed,
         backgroundColor: backgroundColor ??
             sheetTheme?.modalBackgroundColor ??
             sheetTheme?.backgroundColor,
@@ -338,19 +369,14 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
 }
 
 class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
-  /// Creates a suspended curve.
   const _BottomSheetSuspendedCurve(
     this.startingPoint, {
     this.curve = Curves.easeOutCubic,
   })  : assert(startingPoint != null),
         assert(curve != null);
 
-  /// The progress value at which [curve] should begin.
-  ///
-  /// This defaults to [Curves.easeOutCubic].
   final double startingPoint;
 
-  /// The curve to use when [startingPoint] is reached.
   final Curve curve;
 
   @override
@@ -416,6 +442,7 @@ class _ModalBottomSheet<T> extends StatefulWidget {
     this.clipBehavior,
     this.isScrollControlled = false,
     this.enableDrag = true,
+    this.onBackPressed,
   })  : assert(isScrollControlled != null),
         assert(enableDrag != null),
         super(key: key);
@@ -427,6 +454,7 @@ class _ModalBottomSheet<T> extends StatefulWidget {
   final ShapeBorder shape;
   final Clip clipBehavior;
   final bool enableDrag;
+  final Future<bool> Function() onBackPressed;
 
   @override
   _ModalBottomSheetState<T> createState() => _ModalBottomSheetState<T>();
@@ -450,48 +478,14 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
   }
 
   void handleDragStart(DragStartDetails details) {
-    // Allow the bottom sheet to track the user's finger accurately.
     animationCurve = Curves.linear;
   }
 
   void handleDragEnd(DragEndDetails details, {bool isClosing}) {
-    // Allow the bottom sheet to animate smoothly from its current position.
     animationCurve = _BottomSheetSuspendedCurve(
       widget.route.animation.value,
       curve: _modalBottomSheetCurve,
     );
-  }
-
-  Future<bool> _onWillPop() async {
-    if (_exitApp) {
-      _doublePop = false;
-      SweetSheet().show(
-        context: context,
-        description: Text(''),
-        isDismissible: false,
-        color: SweetSheetColor.WARNING,
-        positive: SweetSheetAction(
-          title: kStringYes,
-          onPressed: () {
-            SystemNavigator.pop(animated: true);
-          },
-        ),
-        negative: SweetSheetAction(
-          title: kStringNo,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text(kStringExit),
-        icon: Icons.exit_to_app,
-      );
-    } else if (_doublePop) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-    } else {
-      Navigator.pop(context);
-    }
-    return false;
   }
 
   @override
@@ -504,7 +498,7 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
     final String routeLabel = _getRouteLabel(localizations);
 
     return WillPopScope(
-      onWillPop: _onWillPop,
+      onWillPop: widget.onBackPressed,
       child: AnimatedBuilder(
         animation: widget.route.animation,
         builder: (BuildContext context, Widget child) {

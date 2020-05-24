@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:ganjine/helpers/helper_assets.dart';
-import 'package:ganjine/helpers/helper_http.dart';
-import 'package:ganjine/helpers/helper_sweet_sheet.dart';
+import 'package:ganjine/constants/const_values.dart';
 import 'package:ganjine/screens/screen_home.dart';
+import 'package:ganjine/utilities/utility_ganjine_api.dart';
+import 'package:ganjine/widgets/widget_sweet_sheet.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -21,27 +22,46 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void onBuild() {
     var timeStart = DateTime.now();
-    HttpHelper.testConnection().then(
-      (status) async {
-        if (status) {
+    GanjineAPI.testConnection().then(
+      (response) async {
+        if (response['status']) {
           if (DateTime.now()
               .subtract(Duration(seconds: 3))
               .isBefore(timeStart)) {
             await Future.delayed(Duration(seconds: 1));
           }
-          HttpHelper.collectionsCount().then(
+          GanjineAPI.collectionsCount().then(
             (response) async {
               Navigator.popAndPushNamed(context, HomeScreen.PATH,
-                  arguments: response);
+                  arguments: {HomeScreen.ARGS_COLLECTIONS_COUNT: response});
             },
           ).catchError((error) {
-            showNoConnectionDialog(context, onBuild, exitApp: true);
+            throw NoConnectionException(error);
           });
         } else {
-          showNoConnectionDialog(context, onBuild, exitApp: true);
+          SweetSheet().show(
+            context: context,
+            isDismissible: false,
+            description: Text(response['message']),
+            color: SweetSheetColor.WARNING,
+            positive: SweetSheetAction(
+              title: kStringExitMessage,
+              onPressed: () {
+                SystemNavigator.pop(animated: true);
+              },
+            ),
+            title: Text(kStringNoInternet),
+            icon: Icons.exit_to_app,
+            onBackPressed: () async {
+              SystemNavigator.pop(animated: true);
+              return false;
+            },
+          );
         }
       },
-    );
+    ).catchError((error) {
+      showNoConnectionBottomSheet(context, onBuild, onBackExit: true);
+    });
   }
 
   @override
@@ -52,24 +72,37 @@ class _SplashScreenState extends State<SplashScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image:
-                    AssetImage(imageAssetPNG('backgrounds/bg_screen_splash')),
+                image: AssetImage('assets/images/bg_screen_splash.png'),
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(bottom: 40.0),
+            padding: const EdgeInsets.only(bottom: 50.0),
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Lottie.asset(
-                lottieAssetJSON('lt_loading'),
-                height: 100.0,
-                width: 100.0,
+                'assets/lottie/lt_loading.json',
+                height: 150.0,
+                width: 150.0,
               ),
             ),
           ),
+          Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Text(
+                kStringSplashScreenDeveloper,
+                style: TextStyle(
+                  fontSize: 16.0,
+                  fontFamily: 'Roboto',
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
