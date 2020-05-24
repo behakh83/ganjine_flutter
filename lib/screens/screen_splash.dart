@@ -45,13 +45,13 @@ class _SplashScreenState extends State<SplashScreen> {
             description: Text(response['message']),
             color: SweetSheetColor.WARNING,
             positive: SweetSheetAction(
-              title: kStringExitMessage,
+              title: kStringExit,
               onPressed: () {
                 SystemNavigator.pop(animated: true);
               },
             ),
-            title: Text(kStringNoInternet),
-            icon: Icons.exit_to_app,
+            title: Text(response['title']),
+            icon: Icons.feedback,
             onBackPressed: () async {
               SystemNavigator.pop(animated: true);
               return false;

@@ -144,80 +144,82 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                           itemCount: response['questions_count'],
                           itemBuilder: (context, index) => Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: ListView(
-                              shrinkWrap: true,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    response['question_set'][index]
-                                        ['question_text'],
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 25.0,
-                                      shadows: [
-                                        Shadow(
-                                          blurRadius: 25.0,
-                                          color: Colors.black,
-                                          offset: Offset(5.0, 5.0),
-                                        ),
-                                      ],
+                            child: Center(
+                              child: ListView(
+                                shrinkWrap: true,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      response['question_set'][index]
+                                          ['question_text'],
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25.0,
+                                        shadows: [
+                                          Shadow(
+                                            blurRadius: 25.0,
+                                            color: Colors.black,
+                                            offset: Offset(5.0, 5.0),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                                RoundedTile(
-                                  feedback: false,
-                                  title: response['question_set'][index]
-                                      ['question_text'],
-                                  avatarText: 1.toString(),
-                                  avatarColor: Colors.teal,
-                                  onPressed: () {
-                                    setState(() {
-                                      onOptionSelected(1, index);
-                                    });
-                                  },
-                                  borderColor: getOptionBorderColor(1, index),
-                                ),
-                                RoundedTile(
-                                  feedback: false,
-                                  title: response['question_set'][index]
-                                      ['question_text'],
-                                  avatarText: 2.toString(),
-                                  avatarColor: Colors.orange,
-                                  onPressed: () {
-                                    setState(() {
-                                      onOptionSelected(2, index);
-                                    });
-                                  },
-                                  borderColor: getOptionBorderColor(2, index),
-                                ),
-                                RoundedTile(
-                                  feedback: false,
-                                  title: response['question_set'][index]
-                                      ['question_text'],
-                                  avatarText: 3.toString(),
-                                  avatarColor: Colors.pink,
-                                  onPressed: () {
-                                    setState(() {
-                                      onOptionSelected(3, index);
-                                    });
-                                  },
-                                  borderColor: getOptionBorderColor(3, index),
-                                ),
-                                RoundedTile(
-                                  feedback: false,
-                                  title: response['question_set'][index]
-                                      ['question_text'],
-                                  avatarText: 4.toString(),
-                                  avatarColor: Colors.blue,
-                                  onPressed: () {
-                                    setState(() {
-                                      onOptionSelected(4, index);
-                                    });
-                                  },
-                                  borderColor: getOptionBorderColor(4, index),
-                                )
-                              ],
+                                  RoundedTile(
+                                    feedback: false,
+                                    title: response['question_set'][index]
+                                        ['question_text'],
+                                    avatarText: 1.toString(),
+                                    avatarColor: Colors.teal,
+                                    onPressed: () {
+                                      setState(() {
+                                        onOptionSelected(1, index);
+                                      });
+                                    },
+                                    borderColor: getOptionBorderColor(1, index),
+                                  ),
+                                  RoundedTile(
+                                    feedback: false,
+                                    title: response['question_set'][index]
+                                        ['question_text'],
+                                    avatarText: 2.toString(),
+                                    avatarColor: Colors.orange,
+                                    onPressed: () {
+                                      setState(() {
+                                        onOptionSelected(2, index);
+                                      });
+                                    },
+                                    borderColor: getOptionBorderColor(2, index),
+                                  ),
+                                  RoundedTile(
+                                    feedback: false,
+                                    title: response['question_set'][index]
+                                        ['question_text'],
+                                    avatarText: 3.toString(),
+                                    avatarColor: Colors.pink,
+                                    onPressed: () {
+                                      setState(() {
+                                        onOptionSelected(3, index);
+                                      });
+                                    },
+                                    borderColor: getOptionBorderColor(3, index),
+                                  ),
+                                  RoundedTile(
+                                    feedback: false,
+                                    title: response['question_set'][index]
+                                        ['question_text'],
+                                    avatarText: 4.toString(),
+                                    avatarColor: Colors.blue,
+                                    onPressed: () {
+                                      setState(() {
+                                        onOptionSelected(4, index);
+                                      });
+                                    },
+                                    borderColor: getOptionBorderColor(4, index),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
                         ),
