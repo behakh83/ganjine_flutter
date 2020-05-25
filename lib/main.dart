@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:ganjine/screens/screen_questions.dart';
 import 'package:ganjine/screens/screen_collections.dart';
 import 'package:ganjine/screens/screen_splash.dart';
 import 'package:ganjine/screens/screen_home.dart';
 
-main() => runApp(GanjineApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitDown, DeviceOrientation.portraitUp]);
+  runApp(GanjineApp());
+}
 
 class GanjineApp extends StatelessWidget {
   @override

@@ -14,7 +14,10 @@ void showNoConnectionBottomSheet(BuildContext context, void Function() onRetry,
   SweetSheet().show(
     context: context,
     isDismissible: false,
-    description: Text(kStringRequiredInternet),
+    description: Text(
+      kStringRequiredInternet,
+      style: TextStyle(fontFamily: 'DimaFred'),
+    ),
     color: SweetSheetColor.DANGER,
     positive: SweetSheetAction(
       title: kStringRetry,
@@ -23,7 +26,10 @@ void showNoConnectionBottomSheet(BuildContext context, void Function() onRetry,
         onRetry();
       },
     ),
-    title: Text(kStringNoInternet),
+    title: Text(
+      kStringNoInternet,
+      style: TextStyle(fontFamily: 'DimaFred'),
+    ),
     icon: Icons.signal_wifi_off,
     onBackPressed: () async {
       if (onBackExit) {
@@ -55,7 +61,10 @@ void showExitBottomSheet(BuildContext context) {
         Navigator.pop(context);
       },
     ),
-    title: Text(kStringExitMessage),
+    title: Text(
+      kStringExitMessage,
+      style: TextStyle(fontFamily: 'DimaFred'),
+    ),
     icon: Icons.exit_to_app,
   );
 }
