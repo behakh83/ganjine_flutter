@@ -169,58 +169,74 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                       ],
                                     ),
                                   ),
-                                  RoundedTile(
-                                    feedback: false,
-                                    title: response['question_set'][index]
-                                        ['option1'],
-                                    avatarText: 1.toString(),
-                                    avatarColor: Colors.teal,
-                                    onPressed: () {
-                                      setState(() {
-                                        onOptionSelected(1, index);
-                                      });
-                                    },
-                                    borderColor: getOptionBorderColor(1, index),
-                                  ),
-                                  RoundedTile(
-                                    feedback: false,
-                                    title: response['question_set'][index]
-                                        ['option2'],
-                                    avatarText: 2.toString(),
-                                    avatarColor: Colors.orange,
-                                    onPressed: () {
-                                      setState(() {
-                                        onOptionSelected(2, index);
-                                      });
-                                    },
-                                    borderColor: getOptionBorderColor(2, index),
-                                  ),
-                                  RoundedTile(
-                                    feedback: false,
-                                    title: response['question_set'][index]
-                                        ['option3'],
-                                    avatarText: 3.toString(),
-                                    avatarColor: Colors.pink,
-                                    onPressed: () {
-                                      setState(() {
-                                        onOptionSelected(3, index);
-                                      });
-                                    },
-                                    borderColor: getOptionBorderColor(3, index),
-                                  ),
-                                  RoundedTile(
-                                    feedback: false,
-                                    title: response['question_set'][index]
-                                        ['option4'],
-                                    avatarText: 4.toString(),
-                                    avatarColor: Colors.blue,
-                                    onPressed: () {
-                                      setState(() {
-                                        onOptionSelected(4, index);
-                                      });
-                                    },
-                                    borderColor: getOptionBorderColor(4, index),
-                                  )
+                                  if (response['question_set'][index]
+                                          ['option1'] !=
+                                      'null')
+                                    RoundedTile(
+                                      feedback: false,
+                                      title: response['question_set'][index]
+                                          ['option1'],
+                                      avatarText: 1.toString(),
+                                      avatarColor: Colors.teal,
+                                      onPressed: () {
+                                        setState(() {
+                                          onOptionSelected(1, index);
+                                        });
+                                      },
+                                      borderColor:
+                                          getOptionBorderColor(1, index),
+                                    ),
+                                  if (response['question_set'][index]
+                                          ['option2'] !=
+                                      'null')
+                                    RoundedTile(
+                                      feedback: false,
+                                      title: response['question_set'][index]
+                                          ['option2'],
+                                      avatarText: 2.toString(),
+                                      avatarColor: Colors.orange,
+                                      onPressed: () {
+                                        setState(() {
+                                          onOptionSelected(2, index);
+                                        });
+                                      },
+                                      borderColor:
+                                          getOptionBorderColor(2, index),
+                                    ),
+                                  if (response['question_set'][index]
+                                          ['option3'] !=
+                                      'null')
+                                    RoundedTile(
+                                      feedback: false,
+                                      title: response['question_set'][index]
+                                          ['option3'],
+                                      avatarText: 3.toString(),
+                                      avatarColor: Colors.pink,
+                                      onPressed: () {
+                                        setState(() {
+                                          onOptionSelected(3, index);
+                                        });
+                                      },
+                                      borderColor:
+                                          getOptionBorderColor(3, index),
+                                    ),
+                                  if (response['question_set'][index]
+                                          ['option4'] !=
+                                      'null')
+                                    RoundedTile(
+                                      feedback: false,
+                                      title: response['question_set'][index]
+                                          ['option4'],
+                                      avatarText: 4.toString(),
+                                      avatarColor: Colors.blue,
+                                      onPressed: () {
+                                        setState(() {
+                                          onOptionSelected(4, index);
+                                        });
+                                      },
+                                      borderColor:
+                                          getOptionBorderColor(4, index),
+                                    )
                                 ],
                               ),
                             ),
@@ -239,37 +255,41 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                 alignment: WrapAlignment.center,
                                 runAlignment: WrapAlignment.center,
                                 children: [
-                                  for (var i in answers)
+                                  for (var i = 0; i < answers.length; i++)
                                     FaIcon(
-                                      i == 0
-                                          ? FontAwesomeIcons.solidCircle
-                                          : i ==
-                                                  response['question_set']
-                                                          [answers.indexOf(i)]
-                                                      ['correct_option']
-                                              ? FontAwesomeIcons
-                                                  .solidCheckCircle
-                                              : i !=
-                                                      response['question_set'][
-                                                              answers
-                                                                  .indexOf(i)]
-                                                          ['correct_option']
-                                                  ? FontAwesomeIcons
-                                                      .solidTimesCircle
-                                                  : FontAwesomeIcons
-                                                      .solidCircle,
-                                      color: i == 0
+                                      !_pageController.hasClients && i == 0
+                                          ? FontAwesomeIcons.circleNotch
+                                          : !_pageController.hasClients
+                                              ? FontAwesomeIcons.solidCircle
+                                              : _pageController.page.round() ==
+                                                      i
+                                                  ? FontAwesomeIcons.circleNotch
+                                                  : answers[i] == 0
+                                                      ? FontAwesomeIcons
+                                                          .solidCircle
+                                                      : answers[i] ==
+                                                              response['question_set']
+                                                                      [i][
+                                                                  'correct_option']
+                                                          ? FontAwesomeIcons
+                                                              .solidCheckCircle
+                                                          : answers[i] !=
+                                                                  response['question_set']
+                                                                          [i][
+                                                                      'correct_option']
+                                                              ? FontAwesomeIcons
+                                                                  .solidTimesCircle
+                                                              : FontAwesomeIcons
+                                                                  .solidCircle,
+                                      color: answers[i] == 0
                                           ? Colors.blue
-                                          : i ==
-                                                  response['question_set']
-                                                          [answers.indexOf(i)]
+                                          : answers[i] ==
+                                                  response['question_set'][i]
                                                       ['correct_option']
                                               ? Colors.green.shade700
-                                              : i !=
-                                                      response['question_set'][
-                                                              answers
-                                                                  .indexOf(i)]
-                                                          ['correct_option']
+                                              : answers[i] !=
+                                                      response['question_set']
+                                                          [i]['correct_option']
                                                   ? Colors.redAccent
                                                   : Colors.blue,
                                     )
