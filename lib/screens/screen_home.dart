@@ -82,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
           },
         ),
         title: Text(
-          kStringWelcome,
+          kStringAboutUs,
           style: TextStyle(
             fontFamily: 'DimaFred',
           ),

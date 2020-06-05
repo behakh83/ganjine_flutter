@@ -25,6 +25,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   List<int> answers;
   Map<String, dynamic> arguments;
   Soundpool pool = Soundpool(streamType: StreamType.notification);
+  bool soundsLoaded = false;
   var correctSoundId;
   var wrongSoundId;
 
@@ -47,16 +48,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   void onBuild() {
     GanjineAPI.collection(arguments[QuestionsScreen.ARGS_COLLECTION_ID])
         .then((response) async {
-      correctSoundId = await rootBundle
-          .load("assets/sounds/correct.wav")
-          .then((ByteData soundData) {
-        return pool.load(soundData);
-      });
-      wrongSoundId = await rootBundle
-          .load("assets/sounds/wrong.wav")
-          .then((ByteData soundData) {
-        return pool.load(soundData);
-      });
+      try {
+        correctSoundId = await rootBundle
+            .load("assets/sounds/correct.wav")
+            .then((ByteData soundData) {
+          return pool.load(soundData);
+        });
+        wrongSoundId = await rootBundle
+            .load("assets/sounds/wrong.wav")
+            .then((ByteData soundData) {
+          return pool.load(soundData);
+        });
+        soundsLoaded = true;
+      } catch (error) {}
       setState(() {
         loading = false;
         this.response = response;
@@ -83,6 +87,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   void onOptionSelected(int option, int index) {
     answers[index] = option;
+    if (!soundsLoaded) return;
     if (response['question_set'][index]['correct_option'] == option)
       pool.play(correctSoundId);
     else
